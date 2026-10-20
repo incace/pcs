@@ -2,135 +2,79 @@
 /**
   ******************************************************************************
   * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
+  * @brief          : Lab 2, Part 2 (Custom Register-level UART Driver)
   ******************************************************************************
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "board.h"
-#include "uart_driver.h"
+#include "custom_uart.h"
 #include "calculator.h"
 /* USER CODE END Includes */
 
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 static void Handle_ModeSwitch(void) {
-    if (UartDriver_GetMode() == UART_MODE_INTERRUPT) {
-        UartDriver_SetMode(UART_MODE_POLLING);
-        UartDriver_SendString("\r\n[Driver Mode: POLLING (No Interrupts)]\r\n");
+    if (CustomUart_GetMode() == CUSTOM_UART_MODE_INTERRUPT) {
+        CustomUart_SetMode(CUSTOM_UART_MODE_POLLING);
+        CustomUart_SendString("\r\n[Custom Driver: POLLING (No Interrupts)]\r\n");
     } else {
-        UartDriver_SetMode(UART_MODE_INTERRUPT);
-        UartDriver_SendString("\r\n[Driver Mode: INTERRUPTS]\r\n");
+        CustomUart_SetMode(CUSTOM_UART_MODE_INTERRUPT);
+        CustomUart_SendString("\r\n[Custom Driver: INTERRUPTS]\r\n");
     }
 
     Calculator_Reset();
-    UartDriver_SendString("Enter expression (e.g. 12+34=):\r\n");
+    CustomUart_SendString("Enter expression (e.g. 12+34=):\r\n");
 }
 /* USER CODE END 0 */
 
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART6_UART_Init();
-  /* USER CODE BEGIN 2 */
 
+  /* USER CODE BEGIN 2 */
   Board_Init();
-  UartDriver_Init();
+
+  CustomUart_Init(19200, CUSTOM_UART_MODE_INTERRUPT);
   Calculator_Init();
 
-  UartDriver_SendString("\r\n--- Calculator Stand Ready (19200 baud) ---\r\n");
-  UartDriver_SendString("[Driver Mode: INTERRUPTS]\r\n");
-  UartDriver_SendString("Enter expression (e.g. 12+34=):\r\n");
-
+  CustomUart_SendString("\r\n--- Stand SDK-1.1M Ready (Custom Register UART Driver) ---\r\n");
+  CustomUart_SendString("[Custom Driver: INTERRUPTS]\r\n");
+  CustomUart_SendString("Enter expression (e.g. 12+34=):\r\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
-    /* USER CODE BEGIN WHILE */
-    while (1)
-    {
-        if (Board_Button_IsPressed()) {
-            Handle_ModeSwitch();
-        }
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+      if (Board_Button_IsPressed()) {
+          Handle_ModeSwitch();
+      }
 
-        uint8_t rx_char;
-        if (UartDriver_ReceiveByte(&rx_char)) {
-            if (rx_char != '\r' && rx_char != '\n') {
-                Calculator_ProcessChar(rx_char);
-            }
-        }
-      /* USER CODE END WHILE */
+      uint8_t received_char;
+      if (CustomUart_ReceiveByte(&received_char)) {
+          if (received_char != '\r' && received_char != '\n') {
+              Calculator_ProcessChar(received_char);
+          }
+      }
+    /* USER CODE END WHILE */
 
-      /* USER CODE BEGIN 3 */
-    }
-    /* USER CODE END 3 */
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
 }
+
 
 /**
   * @brief System Clock Configuration
@@ -173,9 +117,7 @@ void SystemClock_Config(void)
   }
 }
 
-/* USER CODE BEGIN 4 */
 
-/* USER CODE END 4 */
 
 /**
   * @brief  This function is executed in case of error occurrence.
@@ -183,28 +125,8 @@ void SystemClock_Config(void)
   */
 void Error_Handler(void)
 {
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
   {
   }
-  /* USER CODE END Error_Handler_Debug */
 }
-
-#ifdef  USE_FULL_ASSERT
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t *file, uint32_t line)
-{
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
-}
-#endif /* USE_FULL_ASSERT */

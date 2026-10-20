@@ -1,5 +1,5 @@
 #include "calculator.h"
-#include "uart_driver.h"
+#include "custom_uart.h"
 #include "board.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +18,7 @@ static bool entering_second_operand = false;
 
 static void Report_Error(void) {
     Board_RedLed_Set(true);
-    UartDriver_SendString("\r\nerror\r\n");
+    CustomUart_SendString("\r\nerror\r\n");
     Calculator_Reset();
 }
 
@@ -56,7 +56,7 @@ static void Calculate_Result(void) {
         Board_RedLed_Set(false);
         char out_str[16];
         sprintf(out_str, "\r\n%d\r\n", (int16_t)result);
-        UartDriver_SendString(out_str);
+        CustomUart_SendString(out_str);
         Calculator_Reset();
     }
 }
@@ -75,7 +75,7 @@ void Calculator_Reset(void) {
 }
 
 void Calculator_ProcessChar(uint8_t ch) {
-    UartDriver_SendByte(ch);
+    CustomUart_SendByte(ch);
 
     if (!entering_second_operand) {
         if (ch >= '0' && ch <= '9') {

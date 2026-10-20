@@ -1,0 +1,13 @@
+../Drivers/CMSIS/Include/core_cm4.h:1688:22:__NVIC_EnableIRQ	16	static
+../Drivers/CMSIS/Include/core_cm4.h:1724:22:__NVIC_DisableIRQ	16	static,ignoring_inline_asm
+../Drivers/CMSIS/Include/core_cm4.h:1816:22:__NVIC_SetPriority	16	static
+../Core/Src/custom_uart.c:9:13:CustomUart_GPIO_Init	4	static
+../Core/Src/custom_uart.c:26:6:CustomUart_Init	24	static
+../Core/Src/custom_uart.c:48:6:CustomUart_SetMode	16	static
+../Core/Src/custom_uart.c:65:18:CustomUart_GetMode	4	static
+../Core/Src/custom_uart.c:69:6:CustomUart_IsRxNotEmpty	4	static
+../Core/Src/custom_uart.c:73:6:CustomUart_IsTxEmpty	4	static
+../Core/Src/custom_uart.c:77:6:CustomUart_ReceiveByte	16	static
+../Core/Src/custom_uart.c:89:6:CustomUart_SendByte	32	static,ignoring_inline_asm
+../Core/Src/custom_uart.c:103:6:CustomUart_SendString	16	static
+../Core/Src/custom_uart.c:109:6:USART6_IRQHandler	16	static
