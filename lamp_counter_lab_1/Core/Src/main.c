@@ -22,7 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "my_gpio_driver.h"
+#include "stm32f4xx.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,29 +59,30 @@ void Play_Animation(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void Update_LEDs(uint8_t val) {
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, (val & 0x01) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    MyGPIO_Write(GPIOD, GPIO_PIN_13, (val & 0x01) ? 1 : 0);
 
     if ((val >> 1) & 0x01) {
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+        MyGPIO_Write(GPIOD, GPIO_PIN_14, 1);
+        MyGPIO_Write(GPIOD, GPIO_PIN_15, 0);
     } else {
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+        MyGPIO_Write(GPIOD, GPIO_PIN_14, 0);
+        MyGPIO_Write(GPIOD, GPIO_PIN_15, 0);
     }
 }
 
 void Play_Animation(void) {
     for(int i = 0; i < 3; i++) {
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13 | GPIO_PIN_14, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+        MyGPIO_Write(GPIOD, GPIO_PIN_13 | GPIO_PIN_14, 1);
+        MyGPIO_Write(GPIOD, GPIO_PIN_15, 0);
         HAL_Delay(200);
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13 | GPIO_PIN_14, GPIO_PIN_RESET);
+        MyGPIO_Write(GPIOD, GPIO_PIN_13 | GPIO_PIN_14, 0);
+        MyGPIO_Write(GPIOD, GPIO_PIN_15, 0);
         HAL_Delay(200);
     }
     for(int i = 0; i < overflows; i++) {
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
+        MyGPIO_Write(GPIOD, GPIO_PIN_13, 1);
         HAL_Delay(300);
-        HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
+        MyGPIO_Write(GPIOD, GPIO_PIN_13, 0);
         HAL_Delay(300);
     }
 }
@@ -90,68 +92,43 @@ void Play_Animation(void) {
   * @brief  The application entry point.
   * @retval int
   */
-int main(void)
-{
-  /* USER CODE BEGIN 1 */
+int main(void) {
+    RCC->CR |= RCC_CR_HSION;
+    while (!(RCC->CR & RCC_CR_HSIRDY));
+    RCC->CFGR &= ~RCC_CFGR_SW;
 
-  /* USER CODE END 1 */
+    SystemCoreClock = 16000000;
+    Timer_Init();
 
-  /* MCU Configuration--------------------------------------------------------*/
+    MyGPIO_Init(GPIOD, GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15, MY_GPIO_MODE_OUTPUT);
+    MyGPIO_Init(GPIOC, GPIO_PIN_15, MY_GPIO_MODE_INPUT);
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+    while (1) {
+        if (MyGPIO_Read(GPIOC, GPIO_PIN_15) == 0) {
+            uint32_t start_time = Get_Ticks();
 
-  /* USER CODE BEGIN Init */
+            while(MyGPIO_Read(GPIOC, GPIO_PIN_15) == 0);
 
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
-  SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-	      if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == GPIO_PIN_RESET) {
-	          uint32_t start_tick = HAL_GetTick();
-
-	          while(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == GPIO_PIN_RESET);
-
-	          if (HAL_GetTick() - start_tick < 500) {
-	              counter++;
-	              if (counter > 3) {
-	                  counter = 0;
-	                  overflows++;
-	                  Play_Animation();
-	              }
-	          } else {
-	              if (counter == 0) {
-	                  counter = 3;
-	                  if (overflows > 0) overflows--;
-	                  Play_Animation();
-	              } else {
-	                  counter--;
-	              }
-	          }
-	          Update_LEDs(counter);
-	      }
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+            if ((Get_Ticks() - start_time) < 500) {
+                counter++;
+                if (counter > 3) {
+                    counter = 0;
+                    overflows++;
+                    Play_Animation();
+                }
+            } else {
+                if (counter == 0) {
+                    counter = 3;
+                    if (overflows > 0) overflows--;
+                    Play_Animation();
+                } else {
+                    counter--;
+                }
+            }
+            Update_LEDs(counter);
+        }
+    }
 }
-
 /**
   * @brief System Clock Configuration
   * @retval None

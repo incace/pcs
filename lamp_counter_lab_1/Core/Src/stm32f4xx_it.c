@@ -180,14 +180,16 @@ void PendSV_Handler(void)
 /**
   * @brief This function handles System tick timer.
   */
+
+extern volatile uint32_t ticks;
+
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+  ticks++;
   /* USER CODE END SysTick_IRQn 0 */
-  HAL_IncTick();
+  HAL_IncTick(); // Можно оставить, если используете HAL частично
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
   /* USER CODE END SysTick_IRQn 1 */
 }
 

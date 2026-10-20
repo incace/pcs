@@ -1,0 +1,6 @@
+../Core/Src/my_gpio_driver.c:3:6:MyGPIO_Init	24	static
+../Core/Src/my_gpio_driver.c:16:6:MyGPIO_Write	16	static
+../Core/Src/my_gpio_driver.c:21:9:MyGPIO_Read	16	static
+../Core/Src/my_gpio_driver.c:28:6:Timer_Init	4	static
+../Core/Src/my_gpio_driver.c:34:10:Get_Ticks	4	static
+../Core/Src/my_gpio_driver.c:38:6:Delay_ms	24	static
