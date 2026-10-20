@@ -1,0 +1,5 @@
+../Core/Src/ring_buffer.c:4:6:RingBuffer_Init	16	static
+../Core/Src/ring_buffer.c:8:6:RingBuffer_Clear	32	static,ignoring_inline_asm
+../Core/Src/ring_buffer.c:19:6:RingBuffer_Push	32	static,ignoring_inline_asm
+../Core/Src/ring_buffer.c:36:6:RingBuffer_Pop	32	static,ignoring_inline_asm
+../Core/Src/ring_buffer.c:53:6:RingBuffer_IsEmpty	16	static

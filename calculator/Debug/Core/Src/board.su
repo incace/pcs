@@ -1,0 +1,3 @@
+../Core/Src/board.c:12:6:Board_Init	8	static
+../Core/Src/board.c:16:6:Board_RedLed_Set	16	static
+../Core/Src/board.c:26:6:Board_Button_IsPressed	16	static

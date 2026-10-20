@@ -1,0 +1,8 @@
+../Core/Src/uart_driver.c:14:6:UartDriver_Init	8	static
+../Core/Src/uart_driver.c:21:6:UartDriver_SetMode	16	static
+../Core/Src/uart_driver.c:37:12:UartDriver_GetMode	4	static
+../Core/Src/uart_driver.c:41:6:UartDriver_ReceiveByte	16	static
+../Core/Src/uart_driver.c:54:6:UartDriver_SendByte	32	static,ignoring_inline_asm
+../Core/Src/uart_driver.c:74:6:UartDriver_SendString	16	static
+../Core/Src/uart_driver.c:80:6:HAL_UART_RxCpltCallback	16	static
+../Core/Src/uart_driver.c:87:6:HAL_UART_TxCpltCallback	24	static

@@ -1,0 +1,5 @@
+../Core/Src/calculator.c:19:13:Report_Error	8	static
+../Core/Src/calculator.c:25:13:Calculate_Result	40	static
+../Core/Src/calculator.c:64:6:Calculator_Init	8	static
+../Core/Src/calculator.c:68:6:Calculator_Reset	4	static
+../Core/Src/calculator.c:77:6:Calculator_ProcessChar	16	static
